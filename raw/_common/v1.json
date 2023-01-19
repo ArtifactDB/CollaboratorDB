@@ -1,0 +1,286 @@
+{
+    "allOf": [ 
+        { "$ref": "../../original/raw/_common/v1.json" },
+        {
+            "if": {
+                "not": {
+                    "properties": {
+                        "is_child": {
+                            "const": true
+                        }
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "title",
+                    "description",
+                    "authors",
+                    "species",
+                    "genome",
+                    "origin",
+                    "terms"
+                ]
+            }
+        }
+    ],
+
+    "properties": {
+        "title": {
+            "type": "string",
+            "description": "Title of the resource."
+        },
+
+        "description": {
+            "type": "string",
+            "description": "Description of the resource."
+        },
+
+        "species": {
+            "type": "array",
+            "items": {
+                "type": "integer",
+                "description": "NCBI taxonomy IDs of the species involved in this resource."
+            }
+        },
+
+        "genome": {
+            "type": "array",
+            "description": "UCSC, Ensembl or other genome builds involved in generating this resource.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Identifier for this genome build.",
+                        "examples": [ "mm10", "NCBIm37" ]
+                    },
+                    "source": {
+                        "type": "string",
+                        "description": "Source of the genome build identifier.",
+                        "enum": [ "Ensembl", "UCSC", "Wormbase", "Flybase" ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "source"
+                ]
+            }
+        },
+
+        "origin": {
+            "type": "array",
+            "description": "Origins of this resource.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "source": {
+                        "type" :"string",
+                        "description": "Source database or repository.",
+                        "enum": [ "PubMed", "GEO", "ArrayExpress", "DOI", "URI" ]
+                    },
+                    "id": {
+                        "type": "string",
+                        "description": "Identifier for the resource in the specified `type`."
+                    }
+                },
+                "allOf": [ 
+                    {
+                        "if": {
+                            "properties": {
+                                "source": {
+                                    "const": "PubMed"
+                                }
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "pattern": "^[0-9]+$"
+                                }
+                            }
+                        }
+                    },
+
+                    {
+                        "if": {
+                            "properties": {
+                                "source": {
+                                    "const": "GEO"
+                                }
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "pattern": "^GSE[0-9]+$"
+                                }
+                            }
+                        }
+                    },
+
+                    {
+                        "if": {
+                            "properties": {
+                                "source": {
+                                    "const": "ArrayExpress"
+                                }
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "pattern": "^E-MTAB-[0-9]+$"
+                                }
+                            }
+                        }
+                    },
+
+                    {
+                        "if": {
+                            "properties": {
+                                "source": {
+                                    "const": "DOI"
+                                }
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "pattern": "^[0-9a-zA-Z\\._-]+/[0-9a-zA-Z\\._-]+$"
+                                }
+                            }
+                        }
+                    },
+
+                    {
+                        "if": {
+                            "properties": {
+                                "source": {
+                                    "const": "URI"
+                                }
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "pattern": "^(http|ftp|https|s3|sftp)://"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+
+        "terms": {
+            "description": "Terms from a controlled vocabulary, used to annotate this resource in a machine-readable manner.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [ "id", "source", "version" ],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Identifier for the term.",
+                        "examples": [ "EFO:0008913", "DOID:13250", "CL:0000097", "UBERON:0005870" ]
+                    },
+                    "source": {
+                        "type": "string",
+                        "description": "Name of the vocabulary or ontology that is the source for this term.",
+                        "enum": [ "Experimental Factor Ontology", "Human Disease Ontology", "Cell Ontology", "UBERON" ]
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "Version of the vocabulary."
+                    }
+                },
+                "allOf": [
+                    {
+                        "if": {
+                            "properties": {
+                                "source": {
+                                    "const": "Experimental Factor Ontology"
+                                }
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "id": {
+                                    "pattern": "^EFO:[0-9]{7}$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "source": {
+                                    "const": "Human Disease Ontology"
+                                }
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "id": {
+                                    "pattern": "^DOID:[0-9]+$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "source": {
+                                    "const": "Cell Ontology"
+                                }
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "id": {
+                                    "pattern": "^CL:[0-9]{7}$"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "if": {
+                            "properties": {
+                                "source": {
+                                    "const": "UBERON"
+                                }
+                            }
+                        },
+                        "then": {
+                            "properties": {
+                                "source": {
+                                    "const": "^UBERON:[0-9]{7}$"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+
+        "authors": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "description": "Names of the authors in terms of their GitHub logins."
+            }
+        }
+    },
+    "required": [
+        "$schema",
+        "path"
+    ]
+}
+
