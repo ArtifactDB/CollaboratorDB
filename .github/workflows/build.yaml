@@ -16,7 +16,7 @@ jobs:
       uses: ArtifactDB/build-schemas-action@master
       with:
         path_docs: "public"
-        docs_title: 'Bioconductor object schemas'
+        docs_title: 'CollaboratorDB object schemas'
         path_tarball: "public/bundle.tar.gz"
 
     - name: Publish to GitHub Pages
