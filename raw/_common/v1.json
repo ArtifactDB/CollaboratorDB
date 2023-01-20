@@ -272,12 +272,32 @@
 
         "authors": {
             "type": "array",
+            "description": "Authors of this resource.",
             "items": {
-                "type": "string",
-                "description": "Names of the authors in terms of their GitHub logins."
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the author."
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "Email of the author.",
+                        "pattern": "^[^@]+@[^@]+$"
+                    },
+                    "orcid": {
+                        "type": "string",
+                        "description": "ORCID of the author.",
+                        "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$"
+                    }
+                },
+                "required": [
+                    "name"
+                ]
             }
         }
     },
+
     "required": [
         "$schema",
         "path"
