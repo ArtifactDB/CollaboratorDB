@@ -12,12 +12,21 @@ jobs:
       with:
         submodules: true
 
-    - name: Build schemas
+    - name: Resolve schemas
       uses: ArtifactDB/build-schemas-action@master
       with:
-        path_docs: "public"
-        docs_title: 'CollaboratorDB object schemas'
-        path_tarball: "public/bundle.tar.gz"
+        do_validate: false
+        do_prettify: false
+
+    - name: Apply CollaboratorDB customizations
+      run: sudo ./customize.sh resolved
+
+    - name: Validate and prettify schemas 
+      uses: ArtifactDB/build-schemas-action@master
+      with:
+        do_resolve: false
+        path_docs: public
+        docs_title: 'CollaboratorDB schemas'
 
     - name: Publish to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@4.1.3
