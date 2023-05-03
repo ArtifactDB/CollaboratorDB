@@ -1,6 +1,11 @@
 {
-    "$id": "sequence_file/v1.json",
+    "$id": "tabix_index_file/v1.json",
     "$schema": "http://json-schema.org/draft-07/schema",
+    "_attributes": {
+        "restore": {
+            "R": "alabaster.files::loadTabixIndexWrapper"
+        }
+    },
     "additionalProperties": false,
     "allOf": [
         {
@@ -26,7 +31,7 @@
             }
         }
     ],
-    "description": "A file containing a collection of sequences. This is most typically used for FASTA files from a reference genome assembly, but it can also be used for experimental FASTQ files.",
+    "description": "A tabix file for indexing various tab-delimited genome position files, e.g., BED.",
     "properties": {
         "$schema": {
             "description": "The schema to use.",
@@ -217,73 +222,50 @@
             "description": "Path to the file in the project directory.",
             "type": "string"
         },
-        "sequence_file": {
-            "allOf": [
-                {
-                    "if": {
-                        "properties": {
-                            "format": {
-                                "const": "FASTQ"
-                            }
-                        }
-                    },
-                    "then": {
-                        "properties": {
-                            "quality_encoding": {
-                                "default": "phred",
-                                "description": "Encoding used for the base quality scores in a FASTQ file.",
-                                "enum": [
-                                    "phred",
-                                    "solexa",
-                                    "illumina"
-                                ],
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            ],
-            "properties": {
-                "compression": {
-                    "description": "The compression format.",
-                    "enum": [
-                        "none",
-                        "gzip",
-                        "bzip2",
-                        "bgzip"
-                    ],
-                    "type": "string"
-                },
-                "format": {
-                    "description": "The file format.",
-                    "enum": [
-                        "FASTA",
-                        "FASTQ"
-                    ],
-                    "type": "string"
-                },
-                "type": {
-                    "default": "DNA",
-                    "description": "Type of sequence in the file.",
-                    "enum": [
-                        "DNA",
-                        "RNA",
-                        "AA"
-                    ],
-                    "type": "string"
-                }
-            },
-            "required": [
-                "format"
-            ],
-            "type": "object"
-        },
         "species": {
             "items": {
                 "description": "NCBI taxonomy IDs of the species involved in this resource.",
                 "type": "integer"
             },
             "type": "array"
+        },
+        "tabix_index_file": {
+            "properties": {
+                "other_data": {
+                    "description": "Location of additional metadata for this file, typically stored as a list (via the `simple_list` schema). Ommitted if no other metadata is provided.",
+                    "properties": {
+                        "resource": {
+                            "_children": {
+                                "contains": [
+                                    "simple_list"
+                                ]
+                            },
+                            "properties": {
+                                "path": {
+                                    "description": "Relative path of the resource from the root of the project directory.",
+                                    "type": "string"
+                                },
+                                "type": {
+                                    "description": "Type of file. Local files should be present in the same project directory.",
+                                    "enum": [
+                                        "local"
+                                    ],
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "type",
+                                "path"
+                            ],
+                            "type": "object"
+                        }
+                    },
+                    "required": [
+                        "resource"
+                    ],
+                    "type": "object"
+                }
+            }
         },
         "terms": {
             "description": "Terms from a controlled vocabulary, used to annotate this resource in a machine-readable manner.",
@@ -399,8 +381,8 @@
         "$schema",
         "md5sum",
         "path",
-        "sequence_file"
+        "tabix_index_file"
     ],
-    "title": "Sequence File",
+    "title": "Tabix File",
     "type": "object"
 }
